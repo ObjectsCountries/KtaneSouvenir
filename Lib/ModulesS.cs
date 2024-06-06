@@ -1280,6 +1280,40 @@ public partial class SouvenirModule
         addQuestions(module, qs);
     }
 
+    private IEnumerable<object> ProcessSmashMarryKill(KMBombModule module)
+    {
+        var comp = GetComponent(module, "SmashMarryKill");
+        var type = comp.GetType();
+
+        var fldSMKmodules = GetStaticField<Dictionary<string, Enum>>(type, "allModules").Get(validator: d => !Bomb.GetSolvableModuleNames().All(m => d.ContainsKey(m)) ? "Module in Smash, Marry, Kill that is not actually present" : null);
+        while (!_isActivated)
+            yield return new WaitForSeconds(.1f);
+        yield return null; // Wait one frame to make sure the Display field has been set.
+
+
+        var totalNonIgnoredSmashMarryKill = GetIntField(comp, "totalNonIgnored").Get();
+
+        if (totalNonIgnoredSmashMarryKill == 0)
+        {
+            Debug.Log($"[Souvenir #{_moduleId}] No question for Smash, Marry, Kill because there were no modules for it to categorize.");
+            _legitimatelyNoQuestions.Add(module);
+            yield break;
+        }
+
+        while (!_noUnignoredModulesLeft)
+            yield return new WaitForSeconds(.1f);
+        _modulesSolved.IncSafe(_SmashMarryKill);
+
+        var myIgnoredList = GetArrayField<string>(comp, "ignoredModules").Get();
+        var totalModuleCount = Bomb.GetSolvableModuleNames().Count;
+        var SMKallQuestions = new List<QandA>();
+        foreach (string mod in Bomb.GetSolvableModuleNames())
+        {
+            SMKallQuestions.Add(makeQuestion(Question.SmashMarryKillCategoryOfGivenModule, "smashmarrykill", formatArgs: new[] { mod }, correctAnswers: new[] { fldSMKmodules.ContainsKey(mod) ? "" + fldSMKmodules[mod].ToString() : "Ignored" }));
+        }
+        addQuestions(module, SMKallQuestions);
+    }
+
     private IEnumerable<object> ProcessSnooker(KMBombModule module)
     {
         var comp = GetComponent(module, "snookerScript");

@@ -470,6 +470,7 @@ public partial class SouvenirModule
     const string _Skyrim = "skyrim";
     const string _SlowMath = "SlowMathModule";
     const string _SmallCircle = "smallCircle";
+    const string _SmashMarryKill = "smashmarrykill";
     const string _Snooker = "snooker";
     const string _Snowflakes = "snowflakes";
     const string _SonicKnuckles = "sonicKnuckles";
@@ -1029,6 +1030,7 @@ public partial class SouvenirModule
             [_Skyrim] = (ProcessSkyrim, "Skyrim", "Timwi"),
             [_SlowMath] = (ProcessSlowMath, "Slow Math", "Quinn Wuest"),
             [_SmallCircle] = (ProcessSmallCircle, "Small Circle", "TasThiluna"),
+            [_SmashMarryKill] = (ProcessSmashMarryKill, "Smash, Marry, Kill", "ObjectsCountries"),
             [_Snooker] = (ProcessSnooker, "Snooker", "TasThiluna"),
             [_Snowflakes] = (ProcessSnowflakes, "Snowflakes", "Kuro"),
             [_SonicKnuckles] = (ProcessSonicKnuckles, "Sonic & Knuckles", "Hawker"),
