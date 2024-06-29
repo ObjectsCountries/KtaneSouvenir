@@ -2265,6 +2265,15 @@ namespace Souvenir
                 ModuleName = "Двойном эксперте",
             },
 
+            // Double Listening
+            // What clip was played in {0}?
+            // What clip was played in Double Listening?
+            [Question.DoubleListeningSounds] = new TranslationInfo
+            {
+                QuestionText = "Какой звук был воспроизведён в «{0}»?",
+                ModuleName = "Двойном аудировании",
+            },
+
             // Double-Oh
             // Which button was the submit button in {0}?
             // Which button was the submit button in Double-Oh?
@@ -3676,11 +3685,12 @@ namespace Souvenir
             },
 
             // IPA
-            // What symbol was the correct answer in {0}?
-            // What symbol was the correct answer in IPA?
-            [Question.IpaSymbol] = new TranslationInfo
+            // What sound played in {0}?
+            // What sound played in IPA?
+            [Question.IpaSound] = new TranslationInfo
             {
-                QuestionText = "What symbol was the correct answer in «{0}»?",
+                QuestionText = "Какой звук был воспроизведён в модуле «{0}»?",
+                ModuleName = "МФА",
             },
 
             // The iPhone
@@ -4069,11 +4079,11 @@ namespace Souvenir
             },
 
             // Listening
-            // What was the correct code you entered in {0}?
-            // What was the correct code you entered in Listening?
-            [Question.ListeningCode] = new TranslationInfo
+            // What clip was played in {0}?
+            // What clip was played in Listening?
+            [Question.ListeningSound] = new TranslationInfo
             {
-                QuestionText = "Какой правильный код был введён в «{0}»?",
+                QuestionText = "Какой звук был воспроизведён в «{0}»?",
                 ModuleName = "Аудировании",
             },
 
@@ -4689,18 +4699,26 @@ namespace Souvenir
             },
 
             // Module Listening
-            // Which module did the sound played by the {1} button belong to in {0}?
-            // Which module did the sound played by the red button belong to in Module Listening?
-            [Question.ModuleListeningSounds] = new TranslationInfo
+            // Which sound did the {1} button play in {0}?
+            // Which sound did the red button play in Module Listening?
+            [Question.ModuleListeningButtonAudio] = new TranslationInfo
             {
-                QuestionText = "Which module did the sound played by the {1} button belong to in «{0}»?",
+                QuestionText = "Какой звук воспроизводился {1} кнопкой в «{0}»?",
+                ModuleName = "Модульном аудировании",
                 FormatArgs = new Dictionary<string, string>
                 {
-                    ["red"] = "red",
-                    ["green"] = "green",
-                    ["blue"] = "blue",
-                    ["yellow"] = "yellow",
+                    ["red"] = "красной",
+                    ["green"] = "зелёной",
+                    ["blue"] = "синей",
+                    ["yellow"] = "жёлтой",
                 },
+            },
+            // Which sound played in {0}?
+            // Which sound played in Module Listening?
+            [Question.ModuleListeningAnyAudio] = new TranslationInfo
+            {
+                QuestionText = "Какой звук был воспроизведён в «{0}»?",
+                ModuleName = "Модульном аудировании",
             },
 
             // Module Maze
@@ -6867,6 +6885,14 @@ namespace Souvenir
                 ModuleName = "Samsung",
             },
 
+            // Sbemail Songs
+            // What was the displayed song for stage {1} (hexadecimal) of {0}?
+            // What was the displayed song for stage 01 (hexadecimal) of Sbemail Songs?
+            [Question.SbemailSongsSongs] = new TranslationInfo
+            {
+                QuestionText = "What was the displayed song for stage {1} (hexadecimal) of {0}?",
+            },
+
             // Scavenger Hunt
             // Which tile was correctly submitted in the first stage of {0}?
             // Which tile was correctly submitted in the first stage of Scavenger Hunt?
@@ -7129,20 +7155,6 @@ namespace Souvenir
                     ["played in the first stage"] = "1",
                     ["added in the second stage"] = "2",
                     ["added in the third stage"] = "3",
-                },
-                Answers = new Dictionary<string, string>
-                {
-                    ["KKSS"] = "ББММ",
-                    ["KKSH"] = "ББМХ",
-                    ["KSSH"] = "БММХ",
-                    ["KHSS"] = "БХММ",
-                    ["KHSH"] = "БХМХ",
-                    ["KHSO"] = "БХМО",
-                    ["KHOH"] = "БХОХ",
-                    ["KOSH"] = "БОМХ",
-                    ["KOSO"] = "БОМО",
-                    ["SKSK"] = "МБМБ",
-                    ["SHHS"] = "МХХМ",
                 },
             },
 
@@ -7437,6 +7449,14 @@ namespace Souvenir
             [Question.SimonSignalsRotationsToShape] = new TranslationInfo
             {
                 QuestionText = "What shape was the arrow with {1} possible directions in «{0}»?",
+            },
+
+            // Simon Smiles
+            // What sound did the {1} button press make {0}?
+            // What sound did the first button press make Simon Smiles?
+            [Question.SimonSmilesSounds] = new TranslationInfo
+            {
+                QuestionText = "What sound did the {1} button press make {0}?",
             },
 
             // Simon Smothers
@@ -7879,7 +7899,8 @@ namespace Souvenir
             // What word was asked to be spelled in Spelling Bee?
             [Question.SpellingBeeWord] = new TranslationInfo
             {
-                QuestionText = "What word was asked to be spelled in «{0}»?",
+                QuestionText = "Какое слово нужно было произнести в «{0}»?",
+                ModuleName = "Правописании",
             },
 
             // Splitting The Loot
@@ -8305,7 +8326,7 @@ namespace Souvenir
             [Question.ThirdBaseDisplay] = new TranslationInfo
             {
                 QuestionText = "Какое слово было на экране на {1}-м этапе в модуле «{0}»?",
-                ModuleName = "А доцент тупой!",
+                ModuleName = "А меня – Сава",
             },
 
             // Tic Tac Toe
@@ -9140,7 +9161,6 @@ namespace Souvenir
             "Я вижу мёртвых сапёров.",     // “I see dead people.” (Sixth Sense)
             "Добро пожаловать... в настоящую бомбу.",     // “Welcome... to the real world.” (The Matrix)
             "Я собираюсь сделать бомбу, которую он не сможет обезвредить.",   // “I’m gonna make him an offer he can’t refuse.” (The Godfather)
-            "Обезвредь её ещё раз, Сэм.",    // “Play it again, Sam.” (Casablanca) (misquote)
             "Луис, я думаю, это начало прекрасного взрыва.",   // “Louis, I think this is the beginning of a beautiful friendship.” (Casablanca)
             "За тебя, сапёр.",  // “Here’s looking at you, kid.” (Casablanca)
             "Я вижу тебя, сапёр.",
@@ -9148,7 +9168,6 @@ namespace Souvenir
             "Давай, обезвредь мою бомбу.", // “Go ahead, make my day.” (Sudden Impact / Dirty Harry series)
             "Да пребудет с тобой бомба.",    // “May the Force be with you.” (Star Wars IV: A New Hope)
             "Люблю запах взрывов по утрам.",   // “I love the smell of napalm in the morning.” (Apocalypse Now)
-            "Взорваться – значит никогда не просить прощения.",   // “Love means never having to say you’re sorry.” (Love Story)
             "Алло? Да, я сейчас обезвреживаю бомбу.",    // “E.T. phone home.” (E.T. the Extra-Terrestrial)
             "Бомб. Джеймс Бомб.",    // “Bond. James Bond.” (Dr. No / James Bond series)
             "Бомба тебе не по зубам!",   // “You can’t handle the truth!” (A Few Good Men)
@@ -9160,36 +9179,31 @@ namespace Souvenir
             "Забудь об этом, Джейк, это КТАНЕ.",     // “Forget it, Jake, it’s Chinatown.” (Chinatown)
             "Я всегда полагался на компетентность экспертов.",    // “I’ve always depended on the kindness of strangers.” (A Streetcar Named Desire)
             "Бомба. Взорванная, а не обезвреженная.",   // “A martini. Shaken, not stirred.” (Diamonds Are Forever (novel) / James Bond)
-            "Я король бомбы!",    // “I’m the king of the world!” (Titanic)
             "Взорви меня, Скотти.",  // “Beam me up, Scotty!” (Star Trek misquote)
             "Ябба- дабба- бум!",    // “Yabba dabba doo!” (Flintstones)
-            "Эта бомба самоуничтожится через пять секунд.",    // “This tape will self-destruct in five seconds.” (Mission: Impossible)
+            "Эта бомба взорвётся через пять секунд.",    // “This tape will self-destruct in five seconds.” (Mission: Impossible)
             "Обезвреживание бесполезно.",  // “Resistance is futile.” (Star Trek: The Next Generation)
             "Это твой окончательный ответ?",   // direct quote (Who Wants to be a Millionaire?)
             "Лучший друг бомбы – это её сапёр.", // “A man’s best friend is his dog.” (attorney George Graham Vest, 1870 Warrensburg)
             "Держи своих экспертов близко, но свою бомбу – ещё ближе.",   // “Keep your friends close and your enemies closer.” (The Prince / Machiavelli)
             "Пристегните ремни безопасности. Это будет взрывная ночь.",   // “Fasten your seat belts, it’s going to be a bumpy night.” (All About Eve)
-            "Покажи мне модули!", // “Show me the money!” (Jerry Maguire)
-            "У нас всегда будут батарейки.", // “We’ll always have Paris.” (Casablanca)
             "Поздоровайся с моей маленькой бомбочкой.", // “Say hello to my little friend!” (Scarface)
             "Ты сапёр, Гарри.", // “You’re a wizard, Harry.” (Harry Potter and the Philosopher’s Stone)
-            "Мне жаль, Дэйв. Боюсь, я не смогу это обезвредить.", // “I’m sorry, Dave. I’m afraid I can’t do that.” (2001: A Space Odyssey)
             "Ты либо умрешь сапёром, либо проживешь достаточно долго, чтобы увидеть, как становишься экспертом.", // “Well, I guess you either die a hero or you live long enough to see yourself become the villain.” (The Dark Knight)
             "Это не обезвреживание. Это взрыв... со стилем.",    // “This isn’t flying. This is falling... with style.” (Toy Story)
             "Не могли бы Вы описать модуль, сэр?",  // “Could you describe the ruckus, sir?” (The Breakfast Club)
-            "Вам нужны виджеты? У меня есть двадцать.",  // “You want thingamabobs? I got twenty.” (The Little Mermaid)
             "Скажи мне корпус бомбы ещё раз, чёрт возьми.",  // “Say what one more goddamn time.” (Pulp Fiction)
-            "Как вам нравятся эти модули?",    // “How do you like them apples?” (Good Will Hunting)
+            "Вам нравятся эти модули?",    // “How do you like them apples?” (Good Will Hunting)
             "Представляем: Двухъярусную... Бомбу!",   // “Introducing: The Double... Decker... Couch!” (The LEGO Movie)
             "Вы что, перепутали провода?", // “Have you got your lions crossed?” (The Lion King)
             "Не перепутай провода.",   // “Don’t cross the streams.” (Ghostbusters)
-            "Хотите услышать самый раздражающий взрыв в мире?", // “Wanna hear the most annoying sound in the world?” (Dumb & Dumber)
+            "Хотите услышать самый мощный и громкий взрыв в мире?", // “Wanna hear the most annoying sound in the world?” (Dumb & Dumber)
             "Руководства? Там, куда мы идём, они нам не нужны.",   // “Roads? Where we’re going, we don’t need roads.” (Back to the Future)
             "На достаточно длинном таймлайне выживаемость всех людей упадёт до нуля.", // direct quote (Fight Club (novel))
             "Это твоя бомба, и она закончится минута в минуту.", // “This is your life and it’s ending one minute at a time.” (Fight Club)
             "Первое правило обезвреживания заключается в том, что вы продолжаете говорить об обезвреживании.",    // “The first rule of Fight Club is, you don’t talk about Fight Club.” (Fight Club)
             "Что ж, вот ещё одна приятная неприятность, в которую ты меня втянул!",     // direct quote (Sons of the Desert / Oliver Hardy)
-            "Ты ведь знаешь, как обезвреживать, правда, Стив? Ты просто соединяешь провода вместе и режешь.",  // “You know how to whistle, don’t you Steve? You just put your lips together, and blow.” (To Have And Have Not)
+            "Ты же знаешь, как обезвреживать, правда, Стив? Просто соединяешь провода вместе и режешь.",  // “You know how to whistle, don’t you Steve? You just put your lips together, and blow.” (To Have And Have Not)
             "Госпожа Сапёр, вы пытаетесь меня обезвредить. Не так ли?",    // “Mrs. Robinson, you’re trying to seduce me. Aren’t you?” (The Graduate)
             "Мы обезвреживаем бомбы.",  // “We rob banks.” (Bonnie and Clyde)
             "Кто-то подложил нам бомбу.",  // direct quote (Zero Wing)
@@ -9199,14 +9213,12 @@ namespace Souvenir
             "То же самое, что мы делаем каждый вечер, эксперт. Попробуем обезвредить бомбу!", // “The same thing we do every night, Pinky. Try to take over the world!” (Pinky and the Brain)
             "Кто-нибудь заказывал жареного сапёра?", // “Anybody order fried sauerkraut?” (Once Upon a Time in Hollywood)
             "У меня есть несколько сапёров, которых нужно разнести в пух и прах!", // “I’ve got some children I need to make into corpses!” (Gravity Falls, Weirdmageddon 3: Take Back The Falls)
-            "Я представляю себе такой взрыв, что это больше похоже на воспоминания.", // “I imagine death so much it feels more like a memory.” (Hamilton)
             "Я – неизбежность.", // direct quote (Avengers: Endgame)
             "Бойтесь, бегите! Бомбы все равно взорвутся.", // “Dread it, run from it, destiny still arrives.” (Avengers: Infinity War)
             "Со временем вы узнаете, каково это – проигрывать. Так отчаянно чувствовать, что ты прав, но все равно получать ошибки.", // “In time, you will know what it’s like to lose. To feel so desperately that you’re right, yet to fail all the same.” (Avengers: Infinity War)
             "Я могу заниматься этим целый день.", // direct quote (Captain America: Civil War)
             "Там... есть... ЧЕТЫРЕ! БОМБЫ!!!", // “There... are... FOUR! LIGHTS!!!” (Star Trek TNG, Chain of Command)
             "Это прекрасная вещь – детонация бомб.", // “It’s a beautiful thing, the destruction of words.” (1984)
-            "Я есть сапёр.", // “Ich bin ein Berliner”, John F. Kennedy, 1963
             "Не спрашивай двойную бомбу, как решать бомбу-Центурион!", // Ask not the sparrow how the eagle soars! (Kill la Kill)
             "Кто-то считает себя слишком умным для меня. Они все так думают поначалу." // Someone thinks they’re too clever for us. They all think that at first. (Invincible)
         );

@@ -536,9 +536,19 @@ public partial class SouvenirModule
         var calls = GetListField<string>(comp, "_calls").Get(expectedLength: 3);
         if (Enumerable.Range(1, 2).Any(i => calls[i].Length <= calls[i - 1].Length || !calls[i].StartsWith(calls[i - 1])))
             throw new AbandonModuleException($"_calls=[{calls.Select(c => $"“{c}”").JoinString(", ")}]; expected each element to start with the previous.");
+        var possibleCalls = "0012|0112|0212|0213|0011|0211|0312|0313|0011|1010|1221|0232".Split('|');
+        var check = Enumerable.Range(0, 3)
+            .Select(i => calls[i].Substring(4 * i))
+            .Select((s, i) => !possibleCalls.Skip(4 * i).Take(4).Contains(s) ? $"Invalid call for stage {i + 1}: {s}" : null)
+            .Where(s => s is not null)
+            .Aggregate<string, string>(null, (a, b) => a is null ? b : a + "; " + b);
+        if (check is not null)
+            throw new AbandonModuleException(check);
 
         var formatArgs = new[] { "played in the first stage", "added in the second stage", "added in the third stage" };
-        addQuestions(module, calls.Select((c, ix) => makeQuestion(Question.SimonSamplesSamples, _SimonSamples, formatArgs: new[] { formatArgs[ix] }, correctAnswers: new[] { (ix == 0 ? c : c.Substring(calls[ix - 1].Length)).Replace("0", "K").Replace("1", "S").Replace("2", "H").Replace("3", "O") })));
+        addQuestions(module, calls.Select((c, ix) => 
+            makeQuestion(Question.SimonSamplesSamples, _SimonSamples, formatArgs: new[] { formatArgs[ix] },
+            correctAnswers: new[] { SimonSamplesAudio[Array.IndexOf(possibleCalls, c.Substring(ix * 4))] }, preferredWrongAnswers: SimonSamplesAudio.Skip(4 * ix).Take(4).ToArray())));
     }
 
     private IEnumerable<object> ProcessSimonSays(KMBombModule module)
@@ -895,6 +905,24 @@ public partial class SouvenirModule
         var noteNames = new[] { "C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B" };
         var flashingColorSequences = GetArrayField<int[]>(comp, "_flashingColors").Get(expectedLength: 3, validator: seq => seq.Any(col => col < 0 || col >= noteNames.Length) ? $"expected range 0–{noteNames.Length - 1}" : null);
         addQuestions(module, flashingColorSequences.SelectMany((seq, stage) => seq.Select((col, ix) => makeQuestion(Question.SimonSingsFlashing, _SimonSings, formatArgs: new[] { ordinal(ix + 1), ordinal(stage + 1) }, correctAnswers: new[] { noteNames[col] }))));
+    }
+
+    private IEnumerable<object> ProcessSimonSmiles(KMBombModule module)
+    {
+        var comp = GetComponent(module, "ShitassSays");
+
+        var fldSolved = GetField<bool>(comp, "moduleSolved");
+        while (!fldSolved.Get())
+            yield return new WaitForSeconds(.1f);
+        _modulesSolved.IncSafe(_SimonSmiles);
+
+        var shitassMode = GetField<bool>(GetField<object>(comp, "Settings").Get(), "shitassMode", true).Get();
+        var sounds = GetField<int[]>(comp, "Sounds")
+            .Get(a => a.Select((b, i) => b < 0 ? $"Sounds[{i}] = {b} < 0" : b > 2 ? $"Sounds[{i}] = {b} > 2" : null).Aggregate((x, y) => x is null ? y : y is null ? x : x + ", " + y));
+        var allAnswers = shitassMode ? SimonSmilesAudio.Skip(3).ToArray() : SimonSmilesAudio.Take(3).ToArray();
+        addQuestions(module, Enumerable.Range(0, 9).Select(ix =>
+            makeQuestion(Question.SimonSmilesSounds, _SimonSmiles, formatArgs: new[] { ordinal(ix + 1) },
+                correctAnswers: new[] { allAnswers[sounds[ix]] }, allAnswers: allAnswers)));
     }
 
     private IEnumerable<object> ProcessSimonSmothers(KMBombModule module)
@@ -1383,14 +1411,19 @@ public partial class SouvenirModule
 
         var badnikName = fldLabel.GetFrom(badnik, v => !SonicKnucklesBadniksSprites.Any(s => s.name == v) ? "not a recognized badnik name" : null);
         var monitorName = fldLabel.GetFrom(monitor, v => !SonicKnucklesMonitorsSprites.Any(s => s.name == v) ? "not a recognized monitor name" : null);
-        var illegalSoundName =
-            fldContainsIllegalSound.GetFrom(hero) ? capitalizeWords(fldAttachedSound.GetFrom(hero).name) :
-            fldContainsIllegalSound.GetFrom(monitor) ? capitalizeWords(fldAttachedSound.GetFrom(monitor).name) :
-            fldContainsIllegalSound.GetFrom(badnik) ? capitalizeWords(fldAttachedSound.GetFrom(badnik).name) :
+        var illegalSound =
+            fldContainsIllegalSound.GetFrom(hero) ? fldAttachedSound.GetFrom(hero) :
+            fldContainsIllegalSound.GetFrom(monitor) ? fldAttachedSound.GetFrom(monitor) :
+            fldContainsIllegalSound.GetFrom(badnik) ? fldAttachedSound.GetFrom(badnik) :
             throw new AbandonModuleException("None of the three items (hero, monitor, badnik) contain the illegal sound.");
 
+        var usedSounds = new[] { fldAttachedSound.GetFrom(hero), fldAttachedSound.GetFrom(hero), fldAttachedSound.GetFrom(badnik) };
+        var allSounds = GetArrayField<AudioClip>(comp, "mushroomSounds", true).Get(expectedLength: 4).Concat(
+                GetArrayField<AudioClip>(comp, "noMushroomSounds", true).Get(expectedLength: 20)
+            ).ToArray();
+
         addQuestions(module,
-            makeQuestion(Question.SonicKnucklesSounds, _SonicKnuckles, correctAnswers: new[] { illegalSoundName }),
+            makeQuestion(Question.SonicKnucklesSounds, _SonicKnuckles, correctAnswers: new[] { illegalSound }, preferredWrongAnswers: usedSounds, allAnswers: allSounds),
             makeQuestion(Question.SonicKnucklesBadnik, _SonicKnuckles, correctAnswers: new[] { SonicKnucklesBadniksSprites.First(sprite => sprite.name == badnikName) }, preferredWrongAnswers: SonicKnucklesBadniksSprites),
             makeQuestion(Question.SonicKnucklesMonitor, _SonicKnuckles, correctAnswers: new[] { SonicKnucklesMonitorsSprites.First(sprite => sprite.name == monitorName) }, preferredWrongAnswers: SonicKnucklesMonitorsSprites));
     }
@@ -1409,25 +1442,8 @@ public partial class SouvenirModule
         if (SonicTheHedgehogSprites.Length != 15)
             throw new AbandonModuleException($@"Sonic the Hedgehog should have 15 sprites. Counted {SonicTheHedgehogSprites.Length}");
 
-        var soundNameMapping = new Dictionary<string, string>()
-        {
-            ["boss"] = "Boss Theme",
-            ["breathe"] = "Breathe",
-            ["continueSFX"] = "Continue",
-            ["drown"] = "Drown",
-            ["emerald"] = "Emerald",
-            ["extraLife"] = "Extra Life",
-            ["finalZone"] = "Final Zone",
-            ["invincibleSFX"] = "Invincibility",
-            ["jump"] = "Jump",
-            ["lamppost"] = "Lamppost",
-            ["marbleZone"] = "Marble Zone",
-            ["skid"] = "Skid",
-            ["spikes"] = "Spikes",
-            ["spin"] = "Spin",
-            ["spring"] = "Spring",
-            ["bumper"] = "Bumper",
-        };
+        var soundNameMapping = "boss|breathe|bumper|continueSFX|drown|emerald|extraLife|finalZone|invincibleSFX|jump|lamppost|marbleZone|skid|spikes|spin|spring"
+            .Split('|').Select((s, i) => (s, i)).ToDictionary(t => t.s, t => t.i);
 
         var pictureNames = new string[] { "annoyedSonic", "ballhog", "blueLamppost", "burrobot", "buzzBomber", "crabMeat", "deadSonic", "drownedSonic", "fallingSonic", "motoBug", "redLamppost", "redSpring", "standingSonic", "switch", "yellowSpring" };
         var pics = fldsPics.Select(f => f.Get(p => p.name == null || !pictureNames.Contains(p.name) ? "unknown pic" : null)).ToArray();
@@ -1456,8 +1472,8 @@ public partial class SouvenirModule
                 Question.SonicTheHedgehogSounds,
                 _SonicTheHedgehog,
                 formatArgs: new[] { screenNames[screen] },
-                correctAnswers: new[] { soundNameMapping[sounds[screen]] },
-                preferredWrongAnswers: sounds.Select(s => soundNameMapping[s]).ToArray()));
+                correctAnswers: new[] { SonicTheHedgehogAudio[soundNameMapping[sounds[screen]]] },
+                preferredWrongAnswers: sounds.Select(s => SonicTheHedgehogAudio[soundNameMapping[s]]).ToArray()));
 
         addQuestions(module, qs);
     }

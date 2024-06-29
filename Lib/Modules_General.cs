@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Souvenir;
 using UnityEngine;
@@ -146,6 +147,7 @@ public partial class SouvenirModule
     const string _DoubleColor = "doubleColor";
     const string _DoubleDigits = "doubleDigitsModule";
     const string _DoubleExpert = "doubleExpert";
+    const string _DoubleListening = "doubleListening";
     const string _DoubleOh = "DoubleOhModule";
     const string _DrDoctor = "DrDoctorModule";
     const string _Dreamcipher = "ksmDreamcipher";
@@ -454,6 +456,7 @@ public partial class SouvenirModule
     const string _SimonSignals = "SimonSignalsModule";
     const string _SimonSimons = "simonSimons";
     const string _SimonSings = "SimonSingsModule";
+    const string _SimonSmiles = "SimonSmiles";
     const string _SimonSmothers = "simonSmothers";
     const string _SimonSounds = "simonSounds";
     const string _SimonSpeaks = "SimonSpeaksModule";
@@ -706,6 +709,7 @@ public partial class SouvenirModule
             [_DoubleColor] = (ProcessDoubleColor, "Double Color", "luisdiogo98"),
             [_DoubleDigits] = (ProcessDoubleDigits, "Double Digits", "Quinn Wuest"),
             [_DoubleExpert] = (ProcessDoubleExpert, "Double Expert", "Kuro"),
+            [_DoubleListening] = (ProcessDoubleListening, "Double Listening", "Anonymous"),
             [_DoubleOh] = (ProcessDoubleOh, "Double-Oh", "Timwi"),
             [_DrDoctor] = (ProcessDrDoctor, "Dr. Doctor", "Timwi"),
             [_Dreamcipher] = (ProcessDreamcipher, "Dreamcipher", "BigCrunch22"),
@@ -1014,6 +1018,7 @@ public partial class SouvenirModule
             [_SimonSignals] = (ProcessSimonSignals, "Simon Signals", "Timwi"),
             [_SimonSimons] = (ProcessSimonSimons, "Simon Simons", "kavinkul"),
             [_SimonSings] = (ProcessSimonSings, "Simon Sings", "Timwi"),
+            [_SimonSmiles] = (ProcessSimonSmiles, "Simon Smiles", "Anonymous"),
             [_SimonSmothers] = (ProcessSimonSmothers, "Simon Smothers", "Kuro"),
             [_SimonSounds] = (ProcessSimonSounds, "Simon Sounds", "Timwi"),
             [_SimonSpeaks] = (ProcessSimonSpeaks, "Simon Speaks", "Timwi"),

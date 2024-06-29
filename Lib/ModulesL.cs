@@ -365,9 +365,20 @@ public partial class SouvenirModule
         while (!solved)
             yield return new WaitForSeconds(.1f);
 
+        var button = GetField<KMSelectable>(comp, "PlayButton", true).Get();
+        button.OnInteract = () =>
+        {
+            Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonPress, button.transform);
+            return false;
+        };
         _modulesSolved.IncSafe(_Listening);
         var correctCode = fldCode.Get(expectedLength: 5).JoinString();
-        addQuestion(module, Question.ListeningCode, correctAnswers: new[] { correctCode });
+
+        var codes = "$#$#*|$*$**|*&*&&|###&$|&#**&|**$*#|&&$&*|&#&&#|$$*$*|&$#$&|*#&*&|#$#&$|$#$*&|$&$$*|*$*$*|#&$&&|&*$*$|&$**&|&#$$#|&$$&*|**###|*#$&&|$&**#|$&&**|$&#$$|#&&*#|##*$*|$*&##|#$$&*|*$$&$|$#*$&|&&&**|$&&*&|**$$$|**#**|#&&&&|#$$**|#&$##|#&$*&|&**$$|&$&##".Split('|');
+
+        addQuestions(module,
+            makeQuestion(Question.ListeningSound, _Listening, correctAnswers: new[] { ListeningAudio[codes.IndexOf(s => s.Equals(correctCode))] })
+        );
     }
 
     private IEnumerable<object> ProcessLogicalButtons(KMBombModule module)

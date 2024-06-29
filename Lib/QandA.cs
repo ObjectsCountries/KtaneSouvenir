@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -21,6 +22,7 @@ namespace Souvenir
             CorrectIndex = correctIndex;
         }
 
+        public AnswerSet Answers => _answerSet;
         public Question Question { get; private set; }
         public string ModuleNameWithThe { get; private set; }
         public int CorrectIndex { get; private set; }
@@ -28,6 +30,7 @@ namespace Souvenir
 
         public string DebugString => $"{_question.DebugText} — {DebugAnswers.Select((a, ix) => string.Format(ix == CorrectIndex ? "[_{0}_]" : "{0}", a)).JoinString(" | ")}";
         public IEnumerable<string> DebugAnswers => _answerSet.DebugAnswers;
+        public bool OnPress(int ix) => _answerSet.OnPress(ix);
 
         public void SetQandAs(SouvenirModule souvenir)
         {
@@ -156,6 +159,8 @@ namespace Souvenir
                     souvenir.Answers[i].gameObject.SetActive(Application.isEditor || i < NumAnswers);
                     souvenir.Answers[i].transform.Find("SpriteHolder").gameObject.SetActive(false);
                     souvenir.Answers[i].transform.Find("AnswerText").gameObject.SetActive(false);
+                    souvenir.Answers[i].transform.Find("PlayHead").gameObject.SetActive(false);
+                    souvenir.Answers[i].transform.Find("PlayIcon").gameObject.SetActive(false);
                     var h1 = souvenir.Answers[i].transform.Find("Highlight");
                     h1.GetComponent<MeshFilter>().sharedMesh = highlightMesh;
                     var h2 = h1.Find("Highlight(Clone)");
@@ -165,6 +170,12 @@ namespace Souvenir
                     souvenir.Answers[i].GetComponent<BoxCollider>().center = boxCenter;
                     souvenir.Answers[i].GetComponent<BoxCollider>().size = boxSize;
                 }
+            }
+
+            // Can return true to indicate Souvenir should skip normal button handling.
+            public virtual bool OnPress(int index)
+            {
+                return false;
             }
         }
 
@@ -222,9 +233,9 @@ namespace Souvenir
             }
         }
 
-        public sealed class SpriteAnswerSet : AnswerSet
+        public class SpriteAnswerSet : AnswerSet
         {
-            private readonly Sprite[] _answers;
+            protected readonly Sprite[] _answers;
 
             public SpriteAnswerSet(int numAnswers, AnswerLayout layout, Sprite[] answers)
                 : base(numAnswers, layout)
@@ -247,7 +258,144 @@ namespace Souvenir
                     var spriteRenderer = souvenir.Answers[i].transform.Find("SpriteHolder").GetComponent<SpriteRenderer>();
                     spriteRenderer.gameObject.SetActive(i < _answers.Length);
                     spriteRenderer.sprite = i < _answers.Length ? _answers[i] : null;
+                    spriteRenderer.transform.localScale = new Vector3(20, 20, 1);
                 }
+            }
+        }
+
+        public class AudioAnswerSet : SpriteAnswerSet
+        {
+            private readonly SouvenirModule _parent;
+            private readonly string _foreignKey;
+            private readonly AudioClip[] _clips;
+            private int _selected = -1;
+            private Coroutine _coroutine;
+            KMAudio.KMAudioRef _audioRef;
+
+            public AudioAnswerSet(int numAnswers, AnswerLayout layout, AudioClip[] answers, SouvenirModule parent, float multiplier, string foreignKey)
+                : base(numAnswers, layout, answers.Select(c => Sprites.RenderWaveform(c, parent, multiplier)).ToArray())
+            {
+                _parent = parent;
+                _foreignKey = foreignKey;
+                _clips = answers.ToArray();
+            }
+
+            public override void BlinkAnswer(bool on, SouvenirModule souvenir, int answerIndex)
+            {
+                base.BlinkAnswer(on, souvenir, answerIndex);
+                souvenir.Answers[answerIndex].transform.Find("PlayHead").gameObject.SetActive(false);
+                souvenir.Answers[answerIndex].transform.Find("PlayIcon").gameObject.SetActive(on);
+            }
+
+            protected override void RenderAnswers(SouvenirModule souvenir)
+            {
+                base.RenderAnswers(souvenir);
+                for (int i = 0; i < souvenir.Answers.Length; i++)
+                {
+                    souvenir.Answers[i].transform.Find("SpriteHolder").localScale = _layout switch
+                    {
+                        AnswerLayout.TwoColumns4Answers => new Vector3(_parent.TwitchPlaysActive ? 14 : 15, 10, 1),
+                        AnswerLayout.ThreeColumns6Answers => new Vector3(_parent.TwitchPlaysActive ? 8 : 10, 10, 1),
+                        AnswerLayout.OneColumn4Answers => new Vector3(30, 10, 1),
+                        // Unreachable
+                        _ => throw new NotImplementedException(),
+                    };
+                    souvenir.Answers[i].transform.Find("PlayIcon").gameObject.SetActive(i < _answers.Length);
+                    souvenir.Answers[i].transform.Find("PlayIcon").GetComponent<SpriteRenderer>().sprite = souvenir.AudioSprites[0];
+                    souvenir.Answers[i].transform.Find("PlayIcon").GetComponent<SpriteRenderer>().color = new Color32(0x17, 0xF4, 0x19, 0xFF);
+                }
+            }
+
+            public override bool OnPress(int index)
+            {
+                if (index == _selected || index > NumAnswers)
+                {
+                    StopSound();
+                    return false;
+                }
+
+                PlaySound(index);
+                return true;
+            }
+
+            private void StopSound()
+            {
+                if (_coroutine != null)
+                    _parent.StopCoroutine(_coroutine);
+
+                if (_selected != -1)
+                    _parent.Answers[_selected].transform.Find("PlayHead").gameObject.SetActive(false);
+
+                _audioRef?.StopSound();
+            }
+
+            public float PlaySound(int index)
+            {
+                StopSound();
+
+                Deselect();
+
+                _selected = index;
+
+                _parent.Answers[_selected].transform.Find("PlayIcon").GetComponent<SpriteRenderer>().sprite = _parent.AudioSprites[1];
+                _parent.Answers[_selected].transform.Find("PlayIcon").GetComponent<SpriteRenderer>().color = new Color32(0xD8, 0x26, 0x26, 0xFF);
+                var head = _parent.Answers[_selected].transform.Find("PlayHead");
+                head.gameObject.SetActive(true);
+
+                _audioRef = _foreignKey == null || Application.isEditor
+                    ? _parent.Audio.HandlePlaySoundAtTransformWithRef?.Invoke(_clips[index].name, _parent.transform, false)
+                    : PlayForeignClip(_clips[index]);
+                _coroutine = _parent.StartCoroutine(AnimatePlayHead(head, _layout switch
+                {
+                    AnswerLayout.TwoColumns4Answers => _parent.TwitchPlaysActive ? 14 : 15,
+                    AnswerLayout.ThreeColumns6Answers => _parent.TwitchPlaysActive ? 8 : 10,
+                    AnswerLayout.OneColumn4Answers => 30,
+                    // Unreachable  
+                    _ => throw new NotImplementedException(),
+                }, _clips[index].length));
+
+                return _clips[index].length;
+            }
+
+            public void Deselect()
+            {
+                if (_selected != -1)
+                {
+                    _parent.Answers[_selected].transform.Find("PlayIcon").GetComponent<SpriteRenderer>().sprite = _parent.AudioSprites[0];
+                    _parent.Answers[_selected].transform.Find("PlayIcon").GetComponent<SpriteRenderer>().color = new Color32(0x17, 0xF4, 0x19, 0xFF);
+                }
+
+                _selected = -1;
+            }
+
+            private IEnumerator AnimatePlayHead(Transform head, float end, float duration)
+            {
+                float endTime = Time.time + duration;
+                head.localPosition = new Vector3(1.5f, 0.35f, 0f);
+                while (Time.time < endTime)
+                {
+                    head.localPosition = new Vector3(Mathf.Lerp(1.5f, 1.5f + end, 1 - (endTime - Time.time) / duration), 0.35f, 0f);
+                    yield return null;
+                }
+                head.gameObject.SetActive(false);
+            }
+
+            private KMAudio.KMAudioRef PlayForeignClip(AudioClip clip)
+            {
+                var aref = new KMAudio.KMAudioRef();
+                var name = _foreignKey + "_" + clip.name;
+                var result = Type.GetType("DarkTonic.MasterAudio.MasterAudio, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null")
+                    .GetMethod("PlaySound3DAtTransform", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
+                    .Invoke(null, new object[] { name, _parent.transform, 1f, null, 0f, null, false, false });
+                // Skip setting loop = true since we don't want that anyways
+                aref.StopSound += () =>
+                {
+                    var variation = result?.GetType().GetProperty("ActingVariation", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+                        ?.GetValue(result, new object[0]);
+                    variation?.GetType().GetMethod("Stop", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+                        ?.Invoke(variation, new object[] { false, false });
+                };
+                return aref;
             }
         }
     }

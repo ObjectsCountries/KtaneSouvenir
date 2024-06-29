@@ -726,6 +726,9 @@
         [SouvenirQuestion("What was the word you submitted in {0}?", "Double Expert", ThreeColumns6Answers, ExampleAnswers = new[] { "Echo", "November", "Rodeo", "Words", "Victor", "Zulu" })]
         DoubleExpertSubmittedWord,
 
+        [SouvenirQuestion("What clip was played in {0}?", "Double Listening", ThreeColumns6Answers, Type = AnswerType.Audio, AudioField = "ListeningAudio")]
+        DoubleListeningSounds,
+
         [SouvenirQuestion("Which button was the submit button in {0}?", "Double-Oh", ThreeColumns6Answers, "↕", "⇕", "↔", "⇔", "◆")]
         DoubleOhSubmitButton,
 
@@ -1245,9 +1248,9 @@
             ExampleExtraFormatArguments = new[] { QandA.Ordinal }, ExampleExtraFormatArgumentGroupSize = 1)]
         InterpunctDisplay,
 
-        [SouvenirQuestion("What symbol was the correct answer in {0}?", "IPA", ThreeColumns6Answers, null,
-            Type = AnswerType.DynamicFont, ExampleAnswers = new[] { "p", "b", "t", "d", "c", "ɟ", "k", "g", "q", "ɢ", "ʔ", "m", "n", "ɲ", "ŋ", "ʙ", "r", "ʀ", "ⱱ", "ɾ" })]
-        IpaSymbol,
+        [SouvenirQuestion("What sound played in {0}?", "IPA", TwoColumns4Answers, null,
+            Type = AnswerType.Audio, ForeignAudioID = "ipa", AudioSizeMultiplier = 4)]
+        IpaSound,
 
         [SouvenirQuestion("What was the {1} PIN digit in {0}?", "iPhone", ThreeColumns6Answers,
             ExampleExtraFormatArguments = new[] { QandA.Ordinal }, ExampleExtraFormatArgumentGroupSize = 1, AddThe = true)]
@@ -1361,8 +1364,8 @@
         [SouvenirQuestion("Which lion was present but removed in {0}?", "Lion’s Share", TwoColumns4Answers, null, ExampleAnswers = new[] { "Taka", "Mufasa", "Uru", "Ahadi", "Zama", "Mohatu", "Kion", "Kiara", "Kopa", "Kovu", "Vitani", "Nuka", "Mheetu", "Zira", "Nala", "Simba", "Sarabi", "Sarafina" })]
         LionsShareRemovedLions,
 
-        [SouvenirQuestion("What was the correct code you entered in {0}?", "Listening", ThreeColumns6Answers, "&&&**", "&$#$&", "$#$*&", "#$$**", "$#$#*", "**$*#", "#$$&*", "##*$*", "$#*$&", "**#**", "#&&*#", "&#**&", "$&**#", "&#$$#", "$&&**", "#&$##", "&*$*$", "&$$&*", "#&&&&", "**$$$", "*&*&&", "*#&*&", "**###", "&&$&*", "&$**&", "#$#&$", "&#&&#", "$$*$*", "$&#$$", "&**$$", "$&&*&", "&$&##", "#&$*&", "$*$**", "*#$&&", "###&$", "*$$&$", "$*&##", "#&$&&", "$&$$*", "*$*$*")]
-        ListeningCode,
+        [SouvenirQuestion("What clip was played in {0}?", "Listening", ThreeColumns6Answers, AudioField = "ListeningAudio", Type = AnswerType.Audio)]
+        ListeningSound,
 
         [SouvenirQuestion("What was the color of the {1} button in the {2} stage of {0}?", "Logical Buttons", TwoColumns4Answers, "Red", "Blue", "Green", "Yellow", "Purple", "White", "Orange", "Cyan", "Grey", TranslateAnswers = true, TranslateFormatArgs = new[] { true, false },
             ExampleExtraFormatArguments = new[] { "top", QandA.Ordinal, "bottom-left", QandA.Ordinal, "bottom-right", QandA.Ordinal, }, ExampleExtraFormatArgumentGroupSize = 2)]
@@ -1573,9 +1576,11 @@
             ExampleExtraFormatArguments = new[] { QandA.Ordinal }, ExampleExtraFormatArgumentGroupSize = 1)]
         ModernCipherWord,
 
-        [SouvenirQuestion("Which module did the sound played by the {1} button belong to in {0}?", "Module Listening", OneColumn4Answers, ExampleAnswers = new[] { "Zoni", "Lucky Dice", "Qwirkle", "Battleship" }, TranslateFormatArgs = new[] { true },
-            ExampleExtraFormatArguments = new[] { "red", "green", "blue", "yellow" }, ExampleExtraFormatArgumentGroupSize = 1)]
-        ModuleListeningSounds,
+        [SouvenirQuestion("Which sound did the {1} button play in {0}?", "Module Listening", ThreeColumns6Answers, TranslateFormatArgs = new[] { true },
+            ExampleExtraFormatArguments = new[] { "red", "green", "blue", "yellow" }, ExampleExtraFormatArgumentGroupSize = 1, Type = AnswerType.Audio, ForeignAudioID = "moduleListening")]
+        ModuleListeningButtonAudio,
+        [SouvenirQuestion("Which sound played in {0}?", "Module Listening", ThreeColumns6Answers, Type = AnswerType.Audio, ForeignAudioID = "moduleListening")]
+        ModuleListeningAnyAudio,
 
         [SouvenirQuestion("Which of the following was the starting icon for {0}?", "Module Maze", ThreeColumns6Answers, null, Type = AnswerType.Sprites)]
         ModuleMazeStartingIcon,
@@ -2320,8 +2325,8 @@
             ExampleExtraFormatArguments = new[] { QandA.Ordinal }, ExampleExtraFormatArgumentGroupSize = 1)]
         SimonSaidPresses,
 
-        [SouvenirQuestion("What were the call samples {1} of {0}?", "Simon Samples", ThreeColumns6Answers, "KKSS", "KKSH", "KSSH", "KHSS", "KHSH", "KHSO", "KHOH", "KOSH", "KOSO", "SKSK", "SHHS", TranslateFormatArgs = new[] { true },
-            ExampleExtraFormatArguments = new[] { "played in the first stage", "added in the second stage", "added in the third stage" }, ExampleExtraFormatArgumentGroupSize = 1, TranslateAnswers = true)]
+        [SouvenirQuestion("What were the call samples {1} of {0}?", "Simon Samples", ThreeColumns6Answers, AudioField = "SimonSamplesAudio", Type = AnswerType.Audio,
+            TranslateFormatArgs = new[] { true }, ExampleExtraFormatArguments = new[] { "played in the first stage", "added in the second stage", "added in the third stage" }, ExampleExtraFormatArgumentGroupSize = 1)]
         SimonSamplesSamples,
 
         [SouvenirQuestion("What color flashed {1} in the final sequence in {0}?", "Simon Says", TwoColumns4Answers, "red", "yellow", "green", "blue", TranslateAnswers = true,
@@ -2442,6 +2447,11 @@
             ExampleExtraFormatArguments = new[] { "3", "4", "5", "6" }, ExampleExtraFormatArgumentGroupSize = 1)]
         SimonSignalsRotationsToShape,
 
+        [SouvenirQuestion("What sound did the {1} button press make {0}?", "Simon Smiles", TwoColumns4Answers,
+            ExampleExtraFormatArguments = new[] { QandA.Ordinal }, ExampleExtraFormatArgumentGroupSize = 1,
+            Type = AnswerType.Audio, AudioField = "SimonSmilesAudio", AudioSizeMultiplier = 6)]
+        SimonSmilesSounds,
+
         [SouvenirQuestion("What was the color of the {1} flash in {0}?", "Simon Smothers", ThreeColumns6Answers, "Red", "Green", "Yellow", "Blue", "Magenta", "Cyan", ExampleExtraFormatArguments = new[] { QandA.Ordinal }, ExampleExtraFormatArgumentGroupSize = 1, TranslateAnswers = true)]
         SimonSmothersColors,
         [SouvenirQuestion("What was the direction of the {1} flash in {0}?", "Simon Smothers", TwoColumns4Answers, "Up", "Down", "Left", "Right", ExampleExtraFormatArguments = new[] { QandA.Ordinal }, ExampleExtraFormatArgumentGroupSize = 1, TranslateAnswers = true)]
@@ -2540,7 +2550,7 @@
         [AnswerGenerator.Strings("A-Za-z")]
         SnowflakesDisplayedSnowflakes,
 
-        [SouvenirQuestion("Which sound was played but not featured in the chosen zone in {0}?", "Sonic & Knuckles", OneColumn4Answers, "Invincibility Theme", "Jump", "Lightning Shield", "Blue Sphere", "Boss Theme", "Flag Bump", "Not Enough Rings", "Special Stage", "Bumper", "Drown Warning", "Ring Cash-In", "Spin", "Badnik Kill", "Breathe", "Lamppost", "Spikes", "Antigrav Funnel", "Flying Battery", "Mushroom Bounce", "Teleport", "Alarm", "Flying Battery Zone Theme", "Bridge Moving Up", "Regular Shield")]
+        [SouvenirQuestion("Which sound was played but not featured in the chosen zone in {0}?", "Sonic & Knuckles", OneColumn4Answers, Type = AnswerType.Audio, ForeignAudioID = "sonicKnuckles")]
         SonicKnucklesSounds,
         [SouvenirQuestion("Which badnik was shown in {0}?", "Sonic & Knuckles", TwoColumns4Answers, Type = AnswerType.Sprites, SpriteField = "SonicKnucklesBadniksSprites")]
         SonicKnucklesBadnik,
@@ -2549,7 +2559,7 @@
 
         [SouvenirQuestion("What was the {1} picture on {0}?", "Sonic The Hedgehog", TwoColumns4Answers, ExampleExtraFormatArguments = new[] { QandA.Ordinal }, ExampleExtraFormatArgumentGroupSize = 1, Type = AnswerType.Sprites, SpriteField = "SonicTheHedgehogSprites")]
         SonicTheHedgehogPictures,
-        [SouvenirQuestion("Which sound was played by the {1} screen on {0}?", "Sonic The Hedgehog", TwoColumns4Answers, "Boss Theme", "Breathe", "Continue", "Drown", "Emerald", "Extra Life", "Final Zone", "Invincibility", "Jump", "Lamppost", "Marble Zone", "Bumper", "Skid", "Spikes", "Spin", "Spring",
+        [SouvenirQuestion("Which sound was played by the {1} screen on {0}?", "Sonic The Hedgehog", TwoColumns4Answers, Type = AnswerType.Audio, AudioField = "SonicTheHedgehogAudio", AudioSizeMultiplier = 4,
             ExampleExtraFormatArguments = new[] { "Running Boots", "Invincibility", "Extra Life", "Rings" }, ExampleExtraFormatArgumentGroupSize = 1)]
         SonicTheHedgehogSounds,
 
